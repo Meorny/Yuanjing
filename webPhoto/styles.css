@@ -1,0 +1,111 @@
+/* 禁用移动设备上的缩放功能 */
+:root {
+  touch-action: pan-x pan-y; /* 允许平移操作 */
+  height: 100%;
+}
+
+/* HTML 基本样式 */
+html {
+  height: 100%;
+  padding: 5vh 5vw;          /* 为视口添加内边距 */
+  overflow-x: hidden;        /* 只隐藏水平滚动条，允许垂直滚动 */
+  background-color: black;   /* 设置背景颜色为黑色 */
+}
+
+/* Body 基本样式 */
+body {
+  margin: 0;                 /* 移除默认的外边距 */
+  min-height: 100vh;         /* 确保 body 高度至少为视口高度 */
+  overflow-x: hidden;        /* 只隐藏水平滚动条，允许垂直滚动 */
+  display: flex;
+  flex-direction: column;    /* 子元素垂直排列 */
+  text-align: center;        /* 文本居中 */
+  color: white;              /* 文本颜色为白色 */
+  font-size: 20px;           /* 设置字体大小 */
+  font-family: sans-serif;   /* 使用无衬线字体 */
+}
+
+/* section 元素的样式 */
+section {
+  border: 2px darkgray solid;  /* 边框样式 */
+  border-radius: 10px;         /* 圆角边框 */
+  margin-bottom: 1em;          /* 下方外边距 */
+}
+
+/* wrapper 类的样式 */
+.wrapper {
+  position: relative;           /* 相对定位 */
+  width: 100%;                  /* 宽度为 100% */
+  padding-top: 56.25%;          /* 使用 padding-top 技术保持 16:9 的宽高比 */
+  height: 0;                    /* 高度为 0 */
+  overflow: hidden;             /* 隐藏溢出内容 */
+  background: transparent;       /* 背景颜色 */
+}
+
+/* 添加一个类用于切换白色背景 */
+.wrapper.white-background {
+  background-color: white;      /* 白色背景 */
+}
+
+/* 添加一个白色覆盖层的类 */
+.wrapper .white-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.5); /* 白色背景，半透明 */
+  z-index: -1;
+}
+
+.wrapper .background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center center;
+  z-index: -1;
+}
+
+/* signat-pad 元素的样式 */
+#signat-pad {
+  position: absolute;           /* 绝对定位 */
+  top: 0;                       /* 顶部对齐 */
+  left: 0;                      /* 左边对齐 */
+  width: 100%;                  /* 宽度为 100% */
+  height: 100%;                 /* 高度为 100% */
+}
+
+/* button-zone 元素的样式 */
+#button-zone {
+  margin-bottom: 0;             /* 底部外边距为 0 */
+  display: none;                /* 默认隐藏 */
+}
+
+/* text-zone 元素的样式 */
+#text-zone {
+  display: none;                /* 默认隐藏 */
+}
+
+/* button 元素的样式 */
+button {
+  margin: 0.5em auto;           /* 上下外边距 0.5em，左右居中 */
+  font-size: 20px;              /* 字体大小 */
+  padding: 0.25em 0.5em;        /* 内边距 */
+}
+
+/* label 元素的样式 */
+label {
+  display: block;               /* 块级元素 */
+  margin: 1em auto 0.5em auto;  /* 上外边距 1em，左右居中，下外边距 0.5em */
+}
+
+/* 滑动条样式 */
+input[type="range"] {
+  display: block;               /* 块级元素 */
+  margin: 0.5em auto;           /* 上下外边距 0.5em，左右居中 */
+  width: 90%;                /* 设置滑动条宽度 */
+}

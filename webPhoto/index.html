@@ -1,0 +1,192 @@
+<!doctype html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <title>WebWelder: Web interface for TouchDesigner</title>
+    <link rel="stylesheet" href="styles.css">
+
+    <script type="module">
+        import {
+            Interface
+        } from "./Interface.js";
+        new Interface();
+    </script>
+    <!--- Signature Pad 
+  <script src="https://cdn.jsdelivr.net/npm/signature_pad@4.1.7/dist/signature_pad.umd.min.js"></script>
+  -->
+
+</head>
+
+<body data-webwelder>
+    <section>
+        <h1>笔迹互动</h1>
+    </section>
+
+    <section id="touch-zone" class="wrapper white-background" data-webwelder >
+        <canvas id="signat-pad" class="signat-pad"></canvas>
+        <div class="background-image" style="background-image: url('');"></div>
+        <div class="white-overlay"></div> <!-- 白色覆盖层 -->
+    </section>
+
+    <div>
+        <label for="minWidth">笔迹最小尺寸:&nbsp;&nbsp;<span id="minWidthValue">1</span></label>
+        <input type="range" id="minWidth" min="0.1" max="20" step="0.1" value="1">
+        <br>
+        <label for="maxWidth">笔迹最大尺寸:&nbsp;&nbsp;<span id="maxWidthValue">5</span></label>
+        <input type="range" id="maxWidth" min="0.1" max="20" step="0.1" value="5">
+        <br>
+        <button id="save">保存图像</button>
+        <button id="clear" data-webwelder="clear">清除画布</button>
+    </div>
+
+    <div>
+        <!-- 添加文件输入字段 -->
+        <input type="file" id="upload-image" style="display: none;">
+        <button onclick="document.getElementById('upload-image').click()">上传背景图片（用于描红）</button>
+        <button id="toggle-background">切换背景</button>
+    </div>
+
+    <section id="text-zone">
+        <label for="url">发送文字:</label>
+        <input id="text" type="text" value="" placeholder="在此输入想要发送的文字……">
+        <button>发送</button>
+    </section>
+
+    <section id="button-zone">
+        <button id="button1" data-webwelder="button1">更换TD显示笔迹（1）</button>
+        <button id="button2" data-webwelder="button2">更换TD显示笔迹（2）</button>
+        <button id="button3" data-webwelder="button3">更换TD显示笔迹（3）</button>
+    </section>
+
+    <script src="./print.js"></script>
+    <script>
+        var signaturePad = new SignaturePad(document.getElementById('signat-pad'), {
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            penColor: 'rgb(0, 0, 0)',
+            minWidth: 1,
+            maxWidth: 5
+        });
+
+        var canvas = document.getElementById('signat-pad');
+        resizeCanvas(canvas);
+
+        function resizeCanvas(canvas) {
+            var ratio = Math.max(window.devicePixelRatio || 1, 1);
+            canvas.width = canvas.offsetWidth * ratio;
+            canvas.height = canvas.offsetHeight * ratio;
+            canvas.getContext('2d').scale(ratio, ratio);
+            // 重新绘制以适应新的画布大小
+            signaturePad.clear();
+        }
+
+        window.addEventListener('resize', function () {
+            resizeCanvas(canvas);
+        });
+
+        var saveButton = document.getElementById('save');
+        var clearButton = document.getElementById('clear');
+
+        saveButton.addEventListener('click', function (event) {
+            // 导出图片数据URL
+            const imageUrl = signaturePad.toDataURL("image/png");
+            // 检查imageUrl是否为空
+            if (imageUrl) {
+                console.log(imageUrl);
+                // 创建一个临时的 <a> 元素
+                var link = document.createElement('a');
+                link.href = imageUrl;
+                link.download = 'signature.png';
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+            } else {
+                console.error("Failed to generate data URL.");
+            }
+        });
+
+        clearButton.addEventListener('click', function (event) {
+            signaturePad.clear();
+        });
+
+        var minWidthSlider = document.getElementById('minWidth');
+        var maxWidthSlider = document.getElementById('maxWidth');
+        var minWidthValue = document.getElementById('minWidthValue');
+        var maxWidthValue = document.getElementById('maxWidthValue');
+
+        /**
+         * 监听minWidthSlider滑块的输入事件，更新签名区域的最小宽度并显示当前值
+         * @param {Event} event - 输入事件对象
+         */
+        minWidthSlider.addEventListener('input', function(event) {
+            var minWidth = parseFloat(minWidthSlider.value);
+            // 设置签名区域的最小宽度
+            signaturePad.minWidth = minWidth;
+            // 显示当前最小宽度值
+            minWidthValue.textContent = minWidth;
+        });
+
+        /**
+         * 监听maxWidthSlider滑块的输入事件，更新签名区域的最大宽度并显示当前值
+         * @param {Event} event - 输入事件对象
+         */
+        maxWidthSlider.addEventListener('input', function(event) {
+            var maxWidth = parseFloat(maxWidthSlider.value);
+            // 设置签名区域的最大宽度
+            signaturePad.maxWidth = maxWidth;
+            // 显示当前最大宽度值
+            maxWidthValue.textContent = maxWidth;
+        });
+    </script>
+
+    <!-- 切换背景图片 -->
+    <script>
+var savedImageUrl = ''; // 用于存储背景图片的URL
+
+// 页面加载时，确保背景是白色的，这里已经默认是白色的，所以不需要额外操作
+
+// 用于处理图片上传的代码
+document.getElementById('upload-image').addEventListener('change', function(event) {
+    var file = event.target.files[0];
+    if (file) {
+        var reader = new FileReader();
+        reader.onload = function(e) {
+            var imageUrl = e.target.result;
+            savedImageUrl = imageUrl; // 将新上传的图片URL保存起来
+            document.querySelector('.background-image').style.backgroundImage = 'url(' + imageUrl + ')';
+            document.querySelector('.wrapper').classList.remove('white-background'); // 移除白色背景类
+        };
+        reader.readAsDataURL(file);
+    }
+});
+
+// 新增代码用于处理背景切换
+var toggleBackground = function() {
+    var wrapper = document.querySelector('.wrapper');
+    var overlay = document.querySelector('.white-overlay');
+    if (savedImageUrl) {
+        // 如果有保存的图片URL
+        if (wrapper.classList.contains('white-background')) {
+            // 如果已经是白色背景，则移除类以显示背景图片
+            wrapper.classList.remove('white-background');
+            overlay.style.display = "block";
+            document.querySelector('.background-image').style.backgroundImage = 'url(' + savedImageUrl + ')'; // 恢复背景图片
+        } else {
+            // 如果不是白色背景，则添加类以显示白色背景，并清空背景图片
+            wrapper.classList.add('white-background');
+            overlay.style.display = "none";
+            document.querySelector('.background-image').style.backgroundImage = '';
+        }
+    } else {
+        // 如果没有保存的图片URL，始终保持白色背景
+        wrapper.classList.add('white-background');
+        overlay.style.display = "";
+    }
+};
+
+document.getElementById('toggle-background').addEventListener('click', toggleBackground);
+    </script>
+</body>
+
+</html>
